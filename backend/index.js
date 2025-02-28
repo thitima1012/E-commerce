@@ -1,37 +1,40 @@
 const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
 const mongoose = require("mongoose");
-const userRouter = require("./routers/user.router");
-const productRouter = require("./routers/product.router");
+const cors = require("cors");
+const userRouter = require("./router/user.router");
+const productRouter = require("./router/product.router");
 const swaggerUi = require("swagger-ui-express");
-const swaggerDocument = require("./docs/swagger-output.json");
-const app = express();
+const swaggerDocument = require("./doc/swagger-output.json");
+
+require("dotenv").config();
+
 const BASE_URL = process.env.BASE_URL;
 const PORT = process.env.PORT;
 const DB_URL = process.env.DB_URL;
 
-//Connect to Mongo DB
+//create app
+const app = express();
+//connect data base
 try {
   mongoose.connect(DB_URL);
-  console.log("Connect to Mongo DB Successfully");
+  console.log("connect to mongo db successfully");
 } catch (error) {
-  console.log("DB Connection Failed");
+  console.log("connect failed " + error);
 }
-
+//allow web can connect app
 app.use(cors({ origin: BASE_URL, credentials: true }));
 app.use(express.json());
+
 app.get("/", (req, res) => {
-  res.send("<h1>Welcome to SE Shop Restful API</h1>");
+  res.send("<h1>welcome to se npru web blog e-commerce restful api</h1>");
 });
 
-app.use("/uploads", express.static(__dirname + "/uploads"));
-
-//use Router
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+//router
 app.use("/api/v1/auth", userRouter);
 app.use("/api/v1/product", productRouter);
-
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+//upload image for local
+//app.use("/upload", express.static(__dirname + "/upload"));
 app.listen(PORT, () => {
   console.log("Server is running on http://localhost:" + PORT);
 });

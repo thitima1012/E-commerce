@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ProductService from "../../services/product.service";
 import Card from "../../components/Card";
 import { useSearchParams } from "react-router";
+
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -17,6 +18,7 @@ const ProductList = () => {
     setSelectedCategory(categoryQuery);
     setItemsPerPage(itemsPerPageQuery);
   }, [categoryQuery, itemsPerPageQuery]);
+  
   useEffect(() => {
     const fetchData = async () => {
       const response = await ProductService.getAllProducts();

@@ -3,6 +3,7 @@ import MainLayout from "../layouts/Main";
 import Home from "../pages/Home/Index";
 import Shop from "../pages/Shop/Index";
 import Cart from "../pages/Cart/Index";
+
 const router = createBrowserRouter([
   {
     path: "/",

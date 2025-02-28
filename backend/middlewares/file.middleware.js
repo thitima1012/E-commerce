@@ -1,8 +1,7 @@
 const multer = require("multer");
 const path = require("path");
-
-const firebaseConfig = require("../configs/firebase.config");
-// console.log(firebaseConfig);
+const firebaseConfig = require("../config/firebase.config");
+//console.log(firebaseConfig);
 const {
   getStorage,
   ref,
@@ -10,69 +9,101 @@ const {
   getDownloadURL,
 } = require("firebase/storage");
 const { initializeApp } = require("firebase/app");
-
 //init firebase
 const app = initializeApp(firebaseConfig);
 const firebaseStorage = getStorage(app);
 
-// Init Upload
+//set storage
+const storage = multer.diskStorage({
+  destination: "./upload/",
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 1000000 }, //limit 1Mb
+  limit: { fileSize: 100000 },
   fileFilter: (req, file, cb) => {
-    checkFileType(file, cb); // Check file ext
+    checkFileType(file, cb);
   },
-}).single("file"); // input name
+}).single("file");
 
 function checkFileType(file, cb) {
-  const fileTypes = /jpeg|jpg|png|gif|webp/;
-  const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = fileTypes.test(file.mimetype);
+  const fileType = /jpeg||jpg||png||git||webp/;
+  const extName = fileType.test(path.extname(file.originalname).toLowerCase());
+  const mimeType = fileType.test(file.mimeType);
 
-  if (mimetype && extName) {
+  if (mimeType && extName) {
     return cb(null, true);
   } else {
-    cb("Error: Image Only!");
+    cb("Error : image Only!!");
   }
 }
 
-//upload to firebase storage
+//upload file to firebase
 async function uploadToFirebase(req, res, next) {
-  console.log(req.file);
-
   if (!req.file) {
-    // return res.status(400).json({ message: "Image is required" });
+    // return res.status(400).json({ message: "image is required" });
     next();
     return;
   }
-  //save location
-  const storageRef = ref(
-    firebaseStorage,
-    `se-shop/upload/${req.file.originalname}`
-  );
-  //file type
+  const storageRef = ref(firebaseStorage, `upload/phubate/${req.file.originalname}`);
+  // meta data file type
   const metadata = {
     contentType: req.file.mimetype,
   };
   try {
-    //uploading....
+    //uploading file to firebase
     const snapshot = await uploadBytesResumable(
       storageRef,
       req.file.buffer,
       metadata
     );
-    // get url from firebase
+    //get file url from firebase
     req.file.firebaseUrl = await getDownloadURL(snapshot.ref);
-    // console.log(req.file.firebaseUrl);
-
     next();
     return;
   } catch (error) {
     res.status(500).json({
       message:
-        error.message || "Somthing wen wrong while uploading to firebase",
+        error.message ||
+        "Something went wrong while uploading image to firebase",
     });
   }
 }
+// async function uploadToFirebase(req, res, next) {
+//   if (!req.file) {
+//     // return res.status(400).json({ message: "image is required" });
+//     next();
+//   }else{
+//     const storageRef = ref(firebaseStorage, `upload/${req.file?.originalname}`);
+//   // meta data file type
+//   const metadata = {
+//     contentType: req.file?.mimetype,
+//   };
+//   try {
+//     //uploading file to firebase
+//     const snapshot = await uploadBytesResumable(
+//       storageRef,
+//       req.file?.buffer,
+//       metadata
+//     );
+//     //get file url from firebase
+//     req.file.firebaseUrl = await getDownloadURL(snapshot.ref);
+//     next();
+//   } catch (error) {
+//     res.status(500).json({
+//       message:
+//         error.message ||
+//         "Something went wrong while uploading image to firebase",
+//     });
+//   }
+//   }
+  
+// }
 
 module.exports = { upload, uploadToFirebase };

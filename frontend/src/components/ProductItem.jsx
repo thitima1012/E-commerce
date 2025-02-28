@@ -1,3 +1,5 @@
+import React from "react";
+
 const ProductItem = ({ image, name, price, rating }) => {
   return (
     <div className="bg-white px-3 py-2 rounded-2xl flex items-center gap-3 shadow-sm w-64">

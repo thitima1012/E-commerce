@@ -10,7 +10,6 @@ const Card = ({ item }) => {
     <div className="card shadow-xl relative mr-5 md:my-5 h-120">
       <div
         className={`rating gap-1 absolute right-2 top-2 p-4 z-10 heartStar
-        }
       `}
         onClick={handleHeartClick}
       >

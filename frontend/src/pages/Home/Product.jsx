@@ -4,6 +4,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import ProductService from "../../services/product.service";
 import Card from "../../components/Card";
+
 const SampleNextArrow = (props) => {
   const { className, style, onClick } = props;
   return (
@@ -15,6 +16,7 @@ const SampleNextArrow = (props) => {
     </div>
   );
 };
+
 const SamplePrevArrow = (props) => {
   const { className, style, onClick } = props;
   return (

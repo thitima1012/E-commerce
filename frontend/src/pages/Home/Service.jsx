@@ -26,6 +26,7 @@ const serviceList = [
     image: "/images/home/services/gift.png",
   },
 ];
+
 const Service = () => {
   const [myServices, setMyServices] = useState(serviceList);
   return (

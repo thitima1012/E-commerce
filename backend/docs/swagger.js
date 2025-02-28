@@ -6,9 +6,9 @@ const doc = {
     title: "SE Shop REST API", // by default: 'REST API'
     description: "RESTful API for SE Shop", // by default: '',
     contact: {
-      name: "Thitima",
-      url: "https://pws.npru.ac.th/thitima",
-      email: "0000@webmail.npru.ac.th",
+      name: "Phubate Nimnuan",
+      //url: "https://pws.npru.ac.th/wuttha",
+      //email: "wuttha@webmail.npru.ac.th",
     },
   },
   servers: [
@@ -67,3 +67,33 @@ const routes = ["./index.js"];
 root file where the route starts, such as index.js, app.js, routes.js, etc ... */
 
 swaggerAutogen(outputFile, routes, doc);
+
+
+
+
+/**
+    #swagger.tags = ['Product']
+    #swagger.summary = "Create a new product"
+    #swagger.description = 'Endpoint to create a new product'
+    #swagger.consumes = ['multipart/form-data']
+    #swagger.parameters['file'] = {
+       in:'formData',
+       type:'file',
+       required:true,
+       description:'Image to upload to Firebase Storage and get its url'
+    }
+    #swagger.requestBody = {
+       required:true,
+       content:{
+         "multipart/form-data":{
+           schema:{
+             $ref:"#components/schemas/NewProduct"
+           }
+         }
+       }
+    }
+    #swagger.response[200] = {
+       schema:{ "$ref": "#components/schemas/ProductResponse"},
+       description: "Product created successfully"
+    }
+   */
