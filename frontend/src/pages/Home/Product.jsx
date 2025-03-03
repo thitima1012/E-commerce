@@ -1,78 +1,77 @@
-import React, { useState, useRef, useEffect } from "react";
-import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import ProductService from "../../services/product.service";
+import Slider from "react-slick";
+import { useState,useRef,useEffect } from "react";
 import Card from "../../components/Card";
+import ProductService from "../../services/product.service";
 
 const SampleNextArrow = (props) => {
   const { className, style, onClick } = props;
   return (
     <div
       className={className}
-      style={{ ...style, display: "block", background: "red" }}
+      style={{ ...style, display: "block", background: "green" }}
     >
-      NEXT
+      Next
     </div>
   );
 };
 
 const SamplePrevArrow = (props) => {
-  const { className, style, onClick } = props;
+  const { className, onClick, style } = props;
   return (
     <div
       className={className}
       style={{ ...style, display: "block", background: "green" }}
     >
-      BACK
+      Back
     </div>
   );
 };
 
 const Product = () => {
   const [products, setProducts] = useState([]);
+  const slider = useRef(null);
   useEffect(() => {
     const fetchData = async () => {
       const response = await ProductService.getAllProducts();
+      //console.log(response);
       const data = response.data;
-      //filter data
-      const special = data.filter((item) => item.category === "gadget");
-
+      const special = data.filter((item)=> item.category === "Clothing")
       setProducts(special);
     };
     fetchData();
   }, []);
-  const slider = useRef(null);
   const setting = {
     dots: true,
-    Infinite: false,
+    infinite: true,
     speed: 500,
     slidesToShow: 3,
-    slidesToScroll: 3,
     initialSlide: 1,
-    nexArrow: <SampleNextArrow />,
+    slidesToScroll: 3,
+    nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
     responsive: [
       {
         breakpoint: 1024,
-        setting: {
-          dots: true,
-          Infinite: true,
+        settings: {
           slidesToShow: 3,
           slidesToScroll: 3,
+          infinite: true,
+          dots: true,
         },
       },
       {
-        breakpoint: 970,
-        setting: {
-          initialSlide: 2,
+        breakpoint: 600,
+        settings: {
           slidesToShow: 2,
           slidesToScroll: 2,
+          initialSlide: 2,
         },
       },
       {
-        breakpoint: 576,
-        setting: {
+        breakpoint: 480,
+        settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
         },
@@ -84,9 +83,9 @@ const Product = () => {
     <div className="section-container my-20 relative">
       <div className="text-left">
         <p className="subtitle">Special Items</p>
-        <h2 className="title">Standout Items from Our Products</h2>
+        <h2 className="title">Standout Items From Our Products</h2>
       </div>
-      <div className="md:absolute right-3 top-8 mb-10 md:mr-24 space-x-2">
+      <div className="md:absolute right-3 top-8 mb-10 md:mr-24 text-2xl">
         <button
           className="btn bg-red p-2 rounded-full h-10 w-10 mt-5 text-white"
           onClick={() => slider?.current?.slickPrev()}
@@ -99,6 +98,7 @@ const Product = () => {
         >
           &gt;
         </button>
+        {/* &lt; , &gt; คือ น้อยกว่า และ มากกว่า */}
       </div>
       <div className="slider-container">
         <Slider
@@ -107,8 +107,8 @@ const Product = () => {
           className="overflow-hidden mt-10 space-x-5"
         >
           {products.length > 0 &&
-            products.map((item, index) => {
-              return <Card item={item} key={index} />;
+            products.map((item) => {
+              return <Card item={item} key={item._id} />;
             })}
         </Slider>
       </div>

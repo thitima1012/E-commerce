@@ -1,6 +1,6 @@
 import React from "react";
-import Banner from "./Banner";
 import ProductList from "./ProductList";
+import Banner from "./Banner";
 
 const Index = () => {
   return (
