@@ -6,6 +6,8 @@ import useCart from "../hooks/useCart";
 const Profile = () => {
   const { user, logout } = useContext(AuthContext);
   const [cart, setCart] = useCart();
+  const userInfo = getUser();
+
   const handleLogout = () => {
     logout();
   };

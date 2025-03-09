@@ -14,8 +14,11 @@ instance.interceptors.request.use((config)=>{
     config.headers["X-Access-Token"] = token;
   }
   return config;
-
-});
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 
 export default instance;

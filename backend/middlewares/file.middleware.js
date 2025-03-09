@@ -1,7 +1,8 @@
 const multer = require("multer");
 const path = require("path");
-const firebaseConfig = require("../config/firebase.config");
-//console.log(firebaseConfig);
+
+const firebaseConfig = require("../configs/firebase.config");
+
 const {
   getStorage,
   ref,
@@ -9,101 +10,76 @@ const {
   getDownloadURL,
 } = require("firebase/storage");
 const { initializeApp } = require("firebase/app");
+
 //init firebase
 const app = initializeApp(firebaseConfig);
 const firebaseStorage = getStorage(app);
 
-//set storage
-const storage = multer.diskStorage({
-  destination: "./upload/",
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
+//Set Storage engine
+// const storage = multer.diskStorage({
+//   destination: "./uploads/",
+//   filename: (req, file, cb) => {
+//     cb(
+//       null,
+//       file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+//     );
+//   },
+// });
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limit: { fileSize: 100000 },
+  limits: { fileSize: 1000000 }, //1MB
   fileFilter: (req, file, cb) => {
-    checkFileType(file, cb);
+    checkFileType(file, cb); //Check file exit
   },
 }).single("file");
 
 function checkFileType(file, cb) {
-  const fileType = /jpeg||jpg||png||git||webp/;
+  const fileType = /jpeg|jpg|png|git|webp/;
   const extName = fileType.test(path.extname(file.originalname).toLowerCase());
-  const mimeType = fileType.test(file.mimeType);
+  const mimetype = fileType.test(file.mimetype);
 
-  if (mimeType && extName) {
+  if (mimetype && extName) {
     return cb(null, true);
   } else {
-    cb("Error : image Only!!");
+    cb("Error : Image Only ! ");
   }
 }
 
-//upload file to firebase
+//upload to firebase storage
 async function uploadToFirebase(req, res, next) {
   if (!req.file) {
-    // return res.status(400).json({ message: "image is required" });
+    // return res.status(400).json({
+    //   message : "Image is required"
+    // })
     next();
-    return;
-  }
-  const storageRef = ref(firebaseStorage, `upload/phubate/${req.file.originalname}`);
-  // meta data file type
-  const metadata = {
-    contentType: req.file.mimetype,
-  };
-  try {
-    //uploading file to firebase
-    const snapshot = await uploadBytesResumable(
-      storageRef,
-      req.file.buffer,
-      metadata
+  } else {
+    //save location
+    const storageRef = ref(
+      firebaseStorage,
+      `SE-Shop/Best/${req?.file?.originalname}`
     );
-    //get file url from firebase
-    req.file.firebaseUrl = await getDownloadURL(snapshot.ref);
-    next();
-    return;
-  } catch (error) {
-    res.status(500).json({
-      message:
-        error.message ||
-        "Something went wrong while uploading image to firebase",
-    });
+    //file type
+    const metadata = {
+      contentType: req?.file?.mimetype,
+    };
+    try {
+      //uploading...
+      const snapshot = await uploadBytesResumable(
+        storageRef,
+        req?.file?.buffer,
+        metadata
+      );
+      //get url from firebase
+      req.file.firebaseUrl = await getDownloadURL(snapshot.ref);
+      next();
+    } catch (error) {
+      res.status(500).json({
+        message:
+          error.message || "Something went wrong while uploading to firebase",
+      });
+    }
   }
 }
-// async function uploadToFirebase(req, res, next) {
-//   if (!req.file) {
-//     // return res.status(400).json({ message: "image is required" });
-//     next();
-//   }else{
-//     const storageRef = ref(firebaseStorage, `upload/${req.file?.originalname}`);
-//   // meta data file type
-//   const metadata = {
-//     contentType: req.file?.mimetype,
-//   };
-//   try {
-//     //uploading file to firebase
-//     const snapshot = await uploadBytesResumable(
-//       storageRef,
-//       req.file?.buffer,
-//       metadata
-//     );
-//     //get file url from firebase
-//     req.file.firebaseUrl = await getDownloadURL(snapshot.ref);
-//     next();
-//   } catch (error) {
-//     res.status(500).json({
-//       message:
-//         error.message ||
-//         "Something went wrong while uploading image to firebase",
-//     });
-//   }
-//   }
-  
-// }
 
 module.exports = { upload, uploadToFirebase };

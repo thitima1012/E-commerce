@@ -9,13 +9,15 @@ import Profile from "../pages/Profile/Index";
 import Dashboard from "../pages/Dashboard/Index";
 import AddProduct from "../pages/AddProduct/Index";
 import ManageItems from "../pages/ManageItems/Index";
+import AllUsers from "../pages/AllUser/Index";
+
 import ProtectPage from "../pages/ProtectPage/Index";
 import AdminRoute from "../pages/ProtectRoute/AdminRoute";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Main/>,
+    element: <Main />,
     children: [
       {
         path: "/",
@@ -70,6 +72,10 @@ const router = createBrowserRouter([
       {
         path: "manage-items",
         element: <ManageItems />,
+      },
+      {
+        path: "all-users",
+        element: <AllUsers />,
       },
     ],
   },

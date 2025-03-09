@@ -29,7 +29,9 @@ const makeUser = async (email) => {
   return await api.patch(`${API_URL}/make-user`, { email });
 };
 
-
+const getRoleByEmail = async (email) => {
+  return await api.get(`${API_URL}/role/${email}`);
+};
 
 const UserService = {
   signJwt,
@@ -39,6 +41,7 @@ const UserService = {
   deleteUser,
   makeAdmin,
   makeUser,
+  getRoleByEmail
 };
 
 export default UserService;
