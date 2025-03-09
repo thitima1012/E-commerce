@@ -19,12 +19,14 @@ const Modal = ({ name }) => {
   const location = useLocation();
   const [isSignUp, setIsSignUp] = useState(false);
   const from = location.state?.from?.pathname || "/";
+  
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
+
   const onSubmit = (data) => {
     if (!isSignUp) {
       // หากเป็นการล็อกอิน

@@ -10,6 +10,7 @@ const Card = ({ item }) => {
   const { user } = useContext(AuthContext);
   const [cart, refetch] = useCart();
   const [isHeartFilled, setIsHeartFilled] = useState(false);
+  
   const handleHeartClick = () => {
     setIsHeartFilled(!isHeartFilled);
   };
@@ -32,6 +33,7 @@ const Card = ({ item }) => {
         price,
         image,
       };
+      
       const response = await CartService.createCartItem(cartItem);
       if (response.status === 200) {
         Swal.fire({
