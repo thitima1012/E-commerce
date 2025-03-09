@@ -27,7 +27,7 @@ const categoryItem = [
   },
 ];
 
-const Categories = () => {
+const Category = () => {
   const [category, setCategory] = useState(categoryItem);
   return (
     <div className="selection-container py-16 ">
@@ -68,4 +68,4 @@ const Categories = () => {
   );
 };
 
-export default Categories;
+export default Category;

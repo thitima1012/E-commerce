@@ -1,9 +1,9 @@
 import React from "react";
 import { Outlet } from "react-router";
 import Footer from "../components/Footer";
-import NavBar from "../components/Navbar";
-import "./main.css"
-const MainLayout = () => {
+import NavBar from "../components/NavBar";
+import "./Main.css"
+const Main = () => {
   return (
     <div>
       <NavBar />
@@ -13,4 +13,4 @@ const MainLayout = () => {
   );
 };
 
-export default MainLayout;
+export default Main;

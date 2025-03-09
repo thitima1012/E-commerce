@@ -1,13 +1,15 @@
 import { createBrowserRouter } from "react-router";
-import MainLayout from "../layouts/Main";
+import Main from "../layouts/Main";
 import Home from "../pages/Home/Index";
 import Shop from "../pages/Shop/Index";
 import Cart from "../pages/Cart/Index";
+import ViewProfile from "../pages/ViewProfile";
+import Setting from "../pages/Setting";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <MainLayout />,
+    element: <Main />,
     children: [
       {
         path: "/",
@@ -21,6 +23,14 @@ const router = createBrowserRouter([
         path: "/cart",
         element: <Cart />,
       },
+      {
+        path:"/profile",
+        element:<ViewProfile/>
+      },
+      {
+        path:"/setting",
+        element:<Setting/>
+      }
     ],
   },
 ]);

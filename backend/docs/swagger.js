@@ -1,6 +1,6 @@
 const swaggerAutogen = require("swagger-autogen")({ openapi: "3.0.0" });
 
-const doc = {
+const docs = {
   info: {
     version: "1.0.0", // by default: '1.0.0'
     title: "SE Shop REST API", // by default: 'REST API'
@@ -66,7 +66,7 @@ const routes = ["./index.js"];
 /* NOTE: If you are using the express Router, you must pass in the 'routes' only the 
 root file where the route starts, such as index.js, app.js, routes.js, etc ... */
 
-swaggerAutogen(outputFile, routes, doc);
+swaggerAutogen(outputFile, routes, docs);
 
 
 

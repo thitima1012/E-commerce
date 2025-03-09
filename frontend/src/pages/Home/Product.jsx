@@ -1,7 +1,7 @@
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
-import { useState,useRef,useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import Card from "../../components/Card";
 import ProductService from "../../services/product.service";
 
@@ -37,7 +37,7 @@ const Product = () => {
       const response = await ProductService.getAllProducts();
       //console.log(response);
       const data = response.data;
-      const special = data.filter((item)=> item.category === "Clothing")
+      const special = data.filter((item) => item.category === "Clothing")
       setProducts(special);
     };
     fetchData();
@@ -107,9 +107,10 @@ const Product = () => {
           className="overflow-hidden mt-10 space-x-5"
         >
           {products.length > 0 &&
-            products.map((item) => {
-              return <Card item={item} key={item._id} />;
+            products.map((item, index) => {
+              return <Card item={item} key={item._id || index} />;
             })}
+
         </Slider>
       </div>
     </div>
