@@ -10,7 +10,6 @@ const Index = () => {
       <Banner />
       <Category />
       <Product />
-
       <Testimonials />
       <Service />
     </div>

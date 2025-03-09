@@ -1,4 +1,5 @@
 import { createContext, useEffect, useState } from "react";
+import { Cookies } from "react-cookie";
 export const AuthContext = createContext();
 import app from "../configs/firebase.config";
 import {
@@ -13,9 +14,18 @@ import {
   FacebookAuthProvider,
   updateProfile,
 } from "firebase/auth";
+import UserService from "../services/user.service";
+
+const cookies = new Cookies();
+
+const getUser = () => {
+  const userInfo = cookies.get("user") || null;
+  return userInfo;
+};
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const auth = getAuth(app);
   const createUser = (email, password) => {
     return createUserWithEmailAndPassword(auth, email, password);
@@ -44,15 +54,16 @@ const AuthProvider = ({ children }) => {
     return signInWithPopup(auth, provider);
   };
 
-  const updateUserProfile = (displayName, photoURL) => {
+  const updateUserProfile = ({ name, photoURL }) => {
     return updateProfile(auth.currentUser, {
-      displayName,
-      photoURL,
+      displayName: name,
+      photoURL: photoURL,
     });
   };
 
   const authInfo = {
     user,
+    isLoading,
     createUser,
     login,
     logout,
@@ -60,15 +71,26 @@ const AuthProvider = ({ children }) => {
     signUpWithGithub,
     signUpWithFacebook,
     updateUserProfile,
+    getUser,
   };
 
   //check if user is logged in
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setUser(currentUser);
       if (currentUser) {
         setUser(currentUser);
+        setIsLoading(false);
+        const { email } = currentUser;
+        const response = await UserService.signJwt(email);
+        if (response.data) {
+          console.log(response.data);
+          cookies.set("user", response.data);
+        }
+      } else {
+        cookies.remove("user");
       }
+      setIsLoading(false);
     });
     return () => {
       return unsubscribe();

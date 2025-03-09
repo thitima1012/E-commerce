@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ProductService from "../../services/product.service";
 import Card from "../../components/Card";
 import { useSearchParams } from "react-router";
@@ -8,17 +8,18 @@ const ProductList = () => {
   const [categories, setCategories] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const [sortOption, setSortOption] = useState("default");
-  const [selectedCategory, setSelectedCategory] = useState([]);
-  const [searchParam, setSearchParam] = useSearchParams();
-  const [itemPerPage, setItemPerPage] = useState(8);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [itemsPerPage, setItemsPerPage] = useState(8);
   const [currentPage, setCurrentPage] = useState(1);
-  const categoryQuery = searchParam.get("category") || "all";
-  const itemPerPageQuery = searchParam.get("itemPerPage") || 4
+  const categoryQuery = searchParams.get("category") || "all";
+  const itemsPerPageQuery = searchParams.get("itemsPerPage") || 8;
+
   useEffect(() => {
     setSelectedCategory(categoryQuery);
-    setItemPerPage(itemPerPageQuery)
-  }, [categoryQuery,itemPerPageQuery]);
-  
+    setItemsPerPage(itemsPerPageQuery);
+  }, [categoryQuery, itemsPerPageQuery]);
+
   useEffect(() => {
     const fetchData = async () => {
       const response = await ProductService.getAllProducts();
@@ -34,17 +35,17 @@ const ProductList = () => {
   }, []);
 
   const filterItem = (category) => {
-    handleSortItem(sortOption, filteredItems);
-    setSelectedCategory(category);
     const filtered =
       category === "all"
         ? products
         : products.filter((item) => item.category === category);
-    setSearchParam({ ["category"]: category });
     setFilteredItems(filtered);
+    handleSortChange(sortOption, filtered);
+    setSearchParams({ ["category"]: category });
+    setSelectedCategory(category);
   };
 
-  const handleSortItem = (option, products) => {
+  const handleSortChange = (option, products) => {
     setSortOption(option);
     let sortedItem = [...products];
     switch (option) {
@@ -67,39 +68,41 @@ const ProductList = () => {
     setFilteredItems(sortedItem);
   };
 
-  //Pagination page
-  const indexOfLastItem = currentPage * itemPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemPerPage;
-  const currentItem = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
+  //Pagination Logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
   return (
     <div className="section-container">
-      <div className="flex flex-col md:flex-row  flex-wrap md:justify-between items-center space-y-3 mb-8 ">
-        {/* Filter */}
+      <div className="flex flex-col md:flex-row flex-wrap md:justify-between items-center space-y-3 mb-8">
+        {/** Filter */}
         <div className="flex flex-row justify-start md:items-center md:gap-8 gap-4 flex-wrap">
-          {categories.map((categories, index) => {
+          {categories.map((category, index) => {
             return (
               <button
-                className={` ${
-                  selectedCategory === categories ? "active " : ""
-                }px-4 py-2 rounded-full`}
                 key={index}
-                onClick={() => filterItem(categories)}
+                className={`${
+                  selectedCategory === category ? "active" : ""
+                } px-4 py-2 rounded-full`}
+                onClick={() => filterItem(category)}
               >
-                <p className=" capitalize">{categories}</p>
+                <p className="capitalize">{category}</p>
               </button>
             );
           })}
         </div>
-        {/* sort option */}
+        {/** Sort List */}
         <div className="flex justify-end mb-4 rounded-sm">
-          <div className="bg-black p-2 ">
+          <div className="bg-black p-2">
             <select
               name="sortOption"
               id="sortOption"
               className="bg-black text-white px-2 rounded-sm"
-              onChange={(e) => handleSortItem(e.target.value, filteredItems)}
+              onChange={(e) => handleSortChange(e.target.value, filteredItems)}
             >
               <option value="default">Default</option>
               <option value="a-z">A-Z</option>
@@ -109,24 +112,24 @@ const ProductList = () => {
             </select>
           </div>
         </div>
-        {/* Product list */}
-        <div className=" grid md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-4">
-          {currentItem.length > 0 &&
-            currentItem.map((item, index) => {
-              return <Card key={index} item={item} />;
+        {/** Product List */}
+        <div className="grid md:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-4">
+          {currentItems.length > 0 &&
+            currentItems.map((item, index) => {
+              return <Card item={item} key={index} />;
             })}
         </div>
+        {/** Pagination */}
       </div>
-      {/* pagination list */}
-      <div className="flex justify-center my-8 flex-wrap gap-2">
+      <div className="section-container flex flex-row items-center justify-center my-8 flex-wrap gap-2">
         {Array.from({
-          length: Math.ceil(filteredItems.length / itemPerPage),
+          length: Math.ceil(filteredItems.length / itemsPerPage),
         }).map((_, index) => (
           <button
             key={index}
-            className={`mx-1 px-3 py-1 rounded-full ${
-              currentPage === index + 1 ? "bg-red text-white" : "bg-gray"
-            }`}
+            className={`${
+              currentPage === index + 1 ? "bg-red text-white" : ""
+            } px-4 py-2 rounded-full`}
             onClick={() => paginate(index + 1)}
           >
             {index + 1}

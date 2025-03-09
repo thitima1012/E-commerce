@@ -1,14 +1,13 @@
-import React from 'react';
-
 const Footer = () => {
   return (
-    <footer className="bg-white text-gray-600 py-10 justify-center items-center ">
+    <footer className="bg-white text-gray-600 py-10 justify-center items-center">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* Mission Section */}
         <div className="flex flex-col items-center md:items-start">
           <img src="/logo.png" alt="Logo" className="h-12 mb-4" />
           <p className="text-center md:text-left text-sm">
-            Our Mission: To Merge Fashion with Functionality in the World of Software Engineering!
+            Our Mission: To Merge Fashion with Functionality in the World of
+            Software Engineering!
           </p>
         </div>
 
@@ -16,10 +15,26 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold mb-4">USEFUL LINKS</h3>
           <ul className="space-y-2">
-            <li><a href="#" className="hover:underline">About us</a></li>
-            <li><a href="#" className="hover:underline">Events</a></li>
-            <li><a href="#" className="hover:underline">Blogs</a></li>
-            <li><a href="#" className="hover:underline">FAQ</a></li>
+            <li>
+              <a href="#" className="hover:underline">
+                About us
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:underline">
+                Events
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:underline">
+                Blogs
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:underline">
+                FAQ
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -27,10 +42,26 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold mb-4">MAIN MENU</h3>
           <ul className="space-y-2">
-            <li><a href="#" className="hover:underline">Home</a></li>
-            <li><a href="#" className="hover:underline">Offers</a></li>
-            <li><a href="#" className="hover:underline">Products</a></li>
-            <li><a href="#" className="hover:underline">Reservation</a></li>
+            <li>
+              <a href="#" className="hover:underline">
+                Home
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:underline">
+                Offers
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:underline">
+                Products
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:underline">
+                Reservation
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -38,9 +69,21 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold mb-4">CONTACT US</h3>
           <ul className="space-y-2">
-            <li><a href="mailto:example@email.com" className="hover:underline">example@email.com</a></li>
-            <li><a href="tel:+66958248966" className="hover:underline">+66 958 248 966</a></li>
-            <li><a href="#" className="hover:underline">Social media</a></li>
+            <li>
+              <a href="mailto:example@email.com" className="hover:underline">
+                example@email.com
+              </a>
+            </li>
+            <li>
+              <a href="tel:+66958248966" className="hover:underline">
+                +66 958 248 966
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:underline">
+                Social media
+              </a>
+            </li>
           </ul>
         </div>
       </div>

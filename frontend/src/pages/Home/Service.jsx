@@ -1,4 +1,3 @@
-import React from "react";
 import { useState } from "react";
 const serviceList = [
   {
@@ -55,7 +54,7 @@ const Service = () => {
                 return (
                   <div
                     key={item.id}
-                    className="shadow-md rounded-sm px-5 py-4 text-center space-y-4 text-red cursor-pointer hover:border hover:border-red transition-all duration-300 hover:bg-blue-50 "
+                    className="shadow-md rounded-sm px-5 py-4 text-center space-y-4 text-red cursor-pointer hover:border hover:border-red transition-all duration-300 hover:bg-blue-200 bg-blue-50 "
                   >
                     <img src={item.image} alt={item.title} className="mx-auto h-16 " />
                     <div>
