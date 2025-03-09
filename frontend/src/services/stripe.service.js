@@ -8,4 +8,5 @@ const createCheckOutSession = async (data) => {
 const stripeService = {
   createCheckOutSession,
 };
+
 export default stripeService;
