@@ -1,24 +1,14 @@
-import React, { useContext } from "react";
-import useCart from "../../hooks/useCart";
-import { FaTrash } from "react-icons/fa";
+import React, { useState, useEffect, useContext } from "react";
 import CartService from "../../services/cart.service";
+import useCart from "./../../hooks/useCart";
 import Swal from "sweetalert2";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../contexts/AuthContext";
+import { FaTrash } from "react-icons/fa";
+import PaymentButton from "../../components//PaymentButton";
+
 const Index = () => {
   const [cart, refetch] = useCart();
   const { user } = useContext(AuthContext);
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("th-TH", {
-      style: "currency",
-      currency: "THB",
-    }).format(price);
-  };
-
-  // คำนวณราคารวมของสินค้าในตะกร้า
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.quantity * item.price,
-    0
-  );
 
   const handleClearCart = async () => {
     Swal.fire({
@@ -33,7 +23,7 @@ const Index = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await CartService.clearCart(user?.email);
+          const response = await CartService.removeAllItems(user?.email);
           if (response.status === 200) {
             refetch();
             Swal.fire({
@@ -42,6 +32,8 @@ const Index = () => {
               text: response.message,
               timer: 1500,
               showConfirmButton: false,
+            }).then(() => {
+              window.location.reload();
             });
           }
         } catch (error) {
@@ -54,6 +46,7 @@ const Index = () => {
       }
     });
   };
+
   const handleDeleteItem = async (cartItem) => {
     Swal.fire({
       icon: "warning",
@@ -67,7 +60,7 @@ const Index = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await CartService.deleteCartItemById(cartItem._id);
+          const response = await CartService.removeItemById(cartItem._id);
           if (response.status === 200) {
             refetch();
             Swal.fire({
@@ -107,19 +100,44 @@ const Index = () => {
       }
     } else {
       Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Maximum quantity is 10",
+        icon: "warning",
+        title: "warning",
+        text: "Maximum buy limit is 10",
       });
     }
   };
+  {
+    /** 
+      const handleIncrease = async (cartItem) => {
+    const quantity = cartItem.quantity + 1;
+    try {
+      const response = await CartService.updateCartItem(cartItem._id, {
+        ...cartItem,
+        quantity,
+      });
+      if (response.status === 200) {
+        refetch();
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message,
+      });
+    }
+  };
+    */
+  }
 
   const handleDecrease = async (cartItem) => {
+    const quantity = cartItem.quantity - 1;
     if (cartItem.quantity > 1) {
       try {
         const response = await CartService.updateCartItem(cartItem._id, {
-          quantity: cartItem.quantity - 1,
+          ...cartItem,
+          quantity,
         });
+        //{...cartItem} คือการเช้าถึงบางส่วนของ cartItem แล้วเปลี่ยนแปลงค่า quantity ในส่วนนั้น
         if (response.status === 200) {
           refetch();
         }
@@ -131,15 +149,37 @@ const Index = () => {
         });
       }
     } else {
-      handleDeleteItem(cartItem); // ถ้าจำนวนสินค้าเหลือ 1 แล้วลดอีก จะลบออกจากตะกร้า
+      handleDeleteItem(cartItem); // Remove item if quantity reaches 0
     }
   };
 
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("th-TH", {
+      style: "currency",
+      currency: "THB",
+    }).format(price);
+  };
+
+  const calculateTotalPrice = (cart) => {
+    let total = 0;
+    for (let i = 0; i < cart.length; i++) {
+      total += cart[i].quantity * cart[i].price;
+    }
+    return total;
+  };
+  // const totalPrice = (cart) => {
+  //   let total = 0;
+  //   cart.forEach((cart) => {
+  //     total += cart.quantity * cart.price;
+  //   });
+  //   return total;
+  // };
+
   return (
     <div>
-      <div className="min-h-screen container mx-auto xl:px-24 px-4">
+      <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4">
         <div className="bg-gradient-to-r from-0% from-[#FAFAFA] to-[#FCFCFC] to-100%">
-          <div className="pt-32 flex flex-col items-center justify-center">
+          <div className="py-28 flex flex-col items-center justify-center">
             <div className="text-center px-4 space-y-7">
               <h2 className="md:text-5xl text-4xl font-bold md:leading-snug leading-snug">
                 Items Added to The <span className="text-red">Cart</span>
@@ -194,16 +234,18 @@ const Index = () => {
                         </div>
                       </td>
                       <td>
-                        <div className="space-x-6 text-center">
+                        <div className="flex items-center justify-center space-x-2">
                           <button
-                            className="btn btn-xs mr-6"
+                            className="btn btn-xs"
                             onClick={() => handleDecrease(cartItem)}
                           >
                             -
                           </button>
-                          {cartItem.quantity}
+                          <span className="w-6 text-center">
+                            {cartItem.quantity}
+                          </span>
                           <button
-                            className="btn btn-xs mr-2"
+                            className="btn btn-xs"
                             onClick={() => handleIncrease(cartItem)}
                           >
                             +
@@ -213,7 +255,7 @@ const Index = () => {
                       <td className="text-center">
                         {formatPrice(cartItem.price)}
                       </td>
-                      <td className="text-center">
+                      <td className="text-center" name="price">
                         {formatPrice(cartItem.quantity * cartItem.price)}
                       </td>
                       <td className="text-center">
@@ -224,52 +266,48 @@ const Index = () => {
                     </tr>
                   ))}
               </tbody>
+              {/* foot */}
+              <tfoot className="text-center">
+                <tr>
+                  <th>#</th>
+                  <th>Product</th>
+                  <th>Item Name</th>
+                  <th>Quantity</th>
+                  <th>Price per Unit</th>
+                  <th className="w-12">Price</th>
+                  <th>Action</th>
+                </tr>
+              </tfoot>
             </table>
+
+            <table className="table"></table>
             <hr />
-            <div className="flex flex-col md:flex-row justify-between items-start my-12 gap-8 ">
+            <div className="max-w-2xl mx-auto flex flex-col md:flex-row justify-between items-start my-12 gap-8">
               <div className="md:w-1/2 space-y-3">
                 <h3 className="text-lg font-semibold">Customer Details</h3>
-                <p className="">Name : {user?.displayName}</p>
-                <p className="">Email : {user?.email}</p>
-                <p className="">UserId : {user?.uid}</p>
+                <p>Name: {user?.displayName}</p>
+                <p>Email: {user?.email}</p>
+                <p>User_Id: {user?.uid}</p>
               </div>
               <div className="md:w-1/2 space-y-3">
                 <h3 className="text-lg font-semibold">Shopping Details</h3>
-                <p className="">Total Products : {cart.length}</p>
-                <p className="">Total Price : {formatPrice(totalPrice)}</p>
-                <a
-                  href="/check-out"
-                  className="btn btn-md bg-red text-white px-8 py-1"
-                >
-                  Proceed to checkout
-                </a>
+                <p>Total Items: {cart.length}</p>
+                <p>Total Price: {formatPrice(calculateTotalPrice(cart))}</p>
+                <PaymentButton cartItem={cart} />
               </div>
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-20 space-y-6">
-            <svg
-              className="w-24 h-24 text-red-500 animate-bounce"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M7 18c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2V8H7v10zM21 6h-4.18l-1.4-2.8A1.993 1.993 0 0 0 13.42 2H10.6c-.78 0-1.48.45-1.8 1.2L7.4 6H3c-.55 0-1 .45-1 1s.45 1 1 1h1v10c0 2.21 1.79 4 4 4h8c2.21 0 4-1.79 4-4V8h1c.55 0 1-.45 1-1s-.45-1-1-1z" />
-            </svg>
-            <div className="text-center space-y-2">
-              <h2 className="text-3xl font-bold text-red-500">
-                Shopping Cart is Empty!
-              </h2>
-              <p className="text-lg text-gray-600">
-                Looks like you haven't added anything yet.
-              </p>
-            </div>
-            <a
-              href="/shop"
-              className="px-6 py-2 text-lg shadow-md hover:shadow-xl transition bg-[#831309] text-white rounded-lg"
-            >
-              Continue Shopping
-            </a>
+          <div className="text-xl font-bold text-center text-red">
+            Shopping cart is Empty!
+            <p>
+              <a
+                href="/shop"
+                className="btn btn-ghost text-white hover:border-red bg-red hover:bg-white hover:text-black"
+              >
+                Go Shopping
+              </a>
+            </p>
           </div>
         )}
       </div>

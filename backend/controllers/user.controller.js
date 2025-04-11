@@ -1,31 +1,31 @@
 const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
 const UserModel = require("../models/User");
-const salt = bcrypt.genSaltSync(10);
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
-const secret = process.env.SECRET;
+require('dotenv').config();
+
+const SECRET = process.env.JWT_SECRET;
 
 exports.sign = async (req, res) => {
-  const { email } = req.body;
+  const { email, role } = req.body;
+  //check email is existing in db
   if (!email) {
-    return res.status(400).json({ message: "Email is required to sign in" });
+    return res.status(400).json({ message: "Email is required" });
   }
-
   const user = await UserModel.findOne({ email });
   if (!user) {
-    return res.status(404).json({ message: "Email is not found" });
+    return res.status(404).json({ message: "User not found" });
   }
 
-  const token = jwt.sign({ email: user.email, role: user.role }, secret, {
+  //sign jwt token
+  const token = jwt.sign({ email: user.email, role: user.role }, SECRET, {
     expiresIn: "1h",
   });
-
   const userInfo = {
-    token: token,
     email: user.email,
     role: user.role,
   };
-  res.status(200).json(userInfo);
+  res.status(200).json({ token, userInfo });
 };
 
 exports.addUser = async (req, res) => {
@@ -55,16 +55,13 @@ exports.addUser = async (req, res) => {
   }
 };
 
-exports.getAllUsers = async (req, res) =>{
+exports.getAllUsers = async (req, res) => {
   try {
-    const { users } = req.body;
-    if (!users) {
-      return res.status(400).json({ message: "No User" });
-    }
-    res.status(500).send(users);
+    const users = await UserModel.find();
+    res.status(200).json(users);
   } catch (error) {
     res.status(500).json({
-      message: "Something error occurred while adding a new user",
+      message: "Something went wrong while fetching users",
       error: error.message,
     });
   }
@@ -115,7 +112,7 @@ exports.makeAdmin =  async (req, res) =>{
     }
     user.role = "admin";
     user.save();
-    res.json(user);
+    res.status(200).json(user);
   } catch (error) {
     res.status(500).json({
       message: "Something error occurred while changing user role to admin",
@@ -133,10 +130,10 @@ exports.makeUser=  async (req, res) =>{
     }
     user.role = "user";
     user.save();
-    res.json(user);
+    res.status(200).json(user);
   } catch (error) {
     res.status(500).json({
-      message: "Something error occurred while changing user role to user",
+      message: "Something error occurred while updating user!",
       error: error.message,
     });
   }
@@ -152,8 +149,9 @@ exports.getRoleByEmail = async(req, res) => {
     res.json({role: user.role});
   } catch (error) {
     res.status(500).json({
-      message: "Something error occurred while changing user role to user",
+      message: "Something error occurred while getting all users!",
       error: error.message,
     });
   }
-}
+};
+

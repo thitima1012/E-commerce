@@ -1,14 +1,15 @@
+import React from "react";
 import Banner from "./Banner";
-import Category from "./Category";
+import Categories from "./Categories";
 import Product from "./Product";
 import Service from "./Service";
-import Testimonials from "./Testimonials";
+import Testimonials from "./testimonials";
 
-const Index = () => {
+const Home = () => {
   return (
     <div>
       <Banner />
-      <Category />
+      <Categories />
       <Product />
       <Testimonials />
       <Service />
@@ -16,4 +17,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Home;

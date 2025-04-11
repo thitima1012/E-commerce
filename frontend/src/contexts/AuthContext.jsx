@@ -1,27 +1,21 @@
-import { createContext, useEffect, useState } from "react";
-import { Cookies } from "react-cookie";
+import { createContext, useState, useEffect } from "react";
 export const AuthContext = createContext();
-import app from "../configs/firebase.config";
+import app from "../configs/firebase.Config";
 import {
-  createUserWithEmailAndPassword,
   getAuth,
-  onAuthStateChanged,
+  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  signInWithPopup,
+  onAuthStateChanged,
   GoogleAuthProvider,
+  signInWithPopup,
   GithubAuthProvider,
   FacebookAuthProvider,
   updateProfile,
 } from "firebase/auth";
+import { Cookies } from "react-cookie";
 import UserService from "../services/user.service";
-
 const cookies = new Cookies();
-
-const getUser = () => {
-  const userInfo = cookies.get("user") || null;
-  return userInfo;
-};
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -30,70 +24,69 @@ const AuthProvider = ({ children }) => {
   const createUser = (email, password) => {
     return createUserWithEmailAndPassword(auth, email, password);
   };
-
   const login = (email, password) => {
     return signInWithEmailAndPassword(auth, email, password);
   };
-
   const logout = () => {
     return signOut(auth);
   };
-
   const signUpWithGoogle = () => {
     const provider = new GoogleAuthProvider();
     return signInWithPopup(auth, provider);
   };
-
   const signUpWithGithub = () => {
     const provider = new GithubAuthProvider();
     return signInWithPopup(auth, provider);
   };
-
   const signUpWithFacebook = () => {
     const provider = new FacebookAuthProvider();
     return signInWithPopup(auth, provider);
   };
-
-  const updateUserProfile = ({ name, photoURL }) => {
-    return updateProfile(auth.currentUser, {
+  const updateUser = (name, profile) => {
+    updateProfile(auth.currentUser, {
       displayName: name,
-      photoURL: photoURL,
+      photoURL: profile,
     });
+  };
+  const getUser = () => {
+    const userInfo = cookies.get("user") || null;
+    return userInfo;
   };
 
   const authInfo = {
     user,
     isLoading,
     createUser,
+    getUser,
     login,
     logout,
     signUpWithGoogle,
     signUpWithGithub,
     signUpWithFacebook,
-    updateUserProfile,
-    getUser,
+    updateUser,
   };
 
-  //check if user is logged in
+  // check user status login or not
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, async (currenUser) => {
+      setUser(currenUser);
+      if (currenUser) {
+        setUser(currenUser);
         setIsLoading(false);
-        const { email } = currentUser;
-        const response = await UserService.signJwt(email);
-        if (response.data) {
-          console.log(response.data);
-          cookies.set("user", response.data);
+        const { email } = currenUser;
+        const { data } = await UserService.signJwt(email);
+        console.log(data);
+        if (data) {
+          cookies.set("user", data);
         }
       } else {
         cookies.remove("user");
       }
       setIsLoading(false);
     });
+
     return () => {
-      return unsubscribe();
+      return unsubscribe;
     };
   }, [auth]);
 

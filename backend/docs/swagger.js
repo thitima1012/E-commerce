@@ -7,8 +7,6 @@ const docs = {
     description: "RESTful API for SE Shop", // by default: '',
     contact: {
       name: "Thitima",
-      //url: "https://pws.npru.ac.th/Thitima",
-      //email: "Thitima@webmail.npru.ac.th",
     },
   },
   servers: [
@@ -20,7 +18,6 @@ const docs = {
       url: "http://render.com:5000", // by default: 'http://localhost:3000'
       description: "Online", // by default: ''
     },
-    // { ... }
   ],
   tags: [
     // by default: empty Array

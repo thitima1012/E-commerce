@@ -1,37 +1,36 @@
 import api from "./api";
 const API_URL = "/cart";
 
-const createCartItem = async (data) => {
-  return await api.post(`${API_URL}`, data);
-};
-
-const getCartItemsByEmail = async (email) => {
-  return await api.get(`${API_URL}/${email}`);
+const createCart = async (cartItem) => {
+  return await api.post(`${API_URL}`, cartItem);
 };
 
 const getAllCartItems = async () => {
   return await api.get(`${API_URL}`);
 };
-
-const updateCartItem = async (id, data) => {
-  return await api.put(`${API_URL}/${id}`, data);
+const getCartItemByEmail = async (email) => {
+  return await api.get(`${API_URL}/${email}`);
 };
 
-const deleteCartItemById = async (id) => {
+const updateCartItem = async (id,cartItem) => {
+  return await api.put(`${API_URL}/${id}`,cartItem);
+};
+
+const removeItemById = async (id) => {
   return await api.delete(`${API_URL}/${id}`);
 };
 
-const clearCart = async (email) => {
+const removeAllItems = async (email) => {
   return await api.delete(`${API_URL}/clear/${email}`);
 };
 
 const CartService = {
-  createCartItem,
-  getCartItemsByEmail,
+  createCart,
   getAllCartItems,
+  getCartItemByEmail,
   updateCartItem,
-  deleteCartItemById,
-  clearCart,
+  removeItemById,
+  removeAllItems,
 };
 
 export default CartService;

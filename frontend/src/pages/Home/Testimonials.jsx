@@ -1,3 +1,5 @@
+import React from "react";
+
 const Testimonials = () => {
   return (
     <div className="section-container py-16">

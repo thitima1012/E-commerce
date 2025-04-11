@@ -1,11 +1,12 @@
-import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
 import Profile from "./Profile";
-import UserIcon from "./icons/UserIcon";
+import UserIcon from "../icon/UserIcon";
 import Modal from "./Modal";
 
-const NavBar = () => {
+const Navbar = () => {
   const { user } = useContext(AuthContext);
+
   const navItems = (
     <>
       <li>
@@ -33,26 +34,16 @@ const NavBar = () => {
           </ul>
         </details>
       </li>
-      <li tabIndex={0}>
-        <details>
-          <summary>Service</summary>
-          <ul>
-            <li>
-              <a href="Order">Order</a>
-            </li>
-            <li>
-              <a href="Order Tracking">Order Tracking</a>
-            </li>
-          </ul>
-        </details>
+      <li>
+        <a href="">Service</a>
       </li>
       <li>
-        <a href="/">Promotions</a>
+        <a href="">Promotion</a>
       </li>
     </>
   );
   return (
-    <div className="navbar bg-base-100 shadow-lg fixed w-full z-10">
+    <div className="navbar z-50 sticky top-0 bg-white">
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -78,35 +69,46 @@ const NavBar = () => {
             {navItems}
           </ul>
         </div>
-        <a className="btn btn-ghost text-xl" href="/">
-          <img
-            src="images/logo.png"
-            alt="logo"
-            className="h-6 lg:h-12 pr-1 mx-auto"
-          />
-          SE SOUVENIR SHOP
+        <a className="btn btn-ghost font-semibold text-xl" href="/">
+          <img src="/logo.png" alt="" className="w-8 h-8" />
+          SE Souvenirs
         </a>
       </div>
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">{navItems}</ul>
       </div>
-      <div className="navbar-end">
-        {user ? (
-          <Profile />
-        ) : (
-          <button
-            href="/login"
-            className="btn bg-red text-white rounded-full px-5 flex items-center gap-2"
-            onClick={() => document.getElementById("signin").showModal()}
-          >
-            <UserIcon className="w-6 h-6" />
-            Login
-          </button>
-        )}
+      <div className="navbar-end space-x-1">
+        {
+          //ternary operator
+          user ? (
+            <Profile />
+          ) : (
+            <div className="flex space-x-4">
+              <div
+                className="btn "
+                onClick={() =>
+                  document.getElementById("Register").showModal()
+                }
+              >
+                Register{" "}
+              </div>
+              <div
+                className="btn bg-red text-white "
+                onClick={() =>
+                  document.getElementById("Login").showModal()
+                }
+              >
+                <UserIcon />
+                Login{" "}
+              </div>
+            </div>
+          )
+        }
       </div>
-      <Modal name="signin" />
+      <Modal name="Login" />
+      <Modal name="Register" />
     </div>
   );
 };
 
-export default NavBar;
+export default Navbar;
